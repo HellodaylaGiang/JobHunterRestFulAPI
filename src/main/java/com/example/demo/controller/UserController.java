@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,11 +29,6 @@ public class UserController {
     public ResponseEntity<User> createNewUser(@RequestBody User u) {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.handleCreateUser(u));
-    }
-
-    @ExceptionHandler(value = IdInvalidException.class)
-    public ResponseEntity<String> handleIdException(IdInvalidException idInvalidException) {
-        return ResponseEntity.badRequest().body(idInvalidException.getMessage());
     }
 
     @DeleteMapping("/users/{id}")
