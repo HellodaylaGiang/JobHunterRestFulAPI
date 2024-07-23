@@ -42,7 +42,12 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable("id") long id) {
+    public ResponseEntity<User> getUserById(@PathVariable("id") long id) throws IdInvalidException {
+
+        if (id > 1500) {
+            throw new IdInvalidException("khong ton tai id: " + id);
+        }
+
         User u = this.userService.findUserById(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(u);
