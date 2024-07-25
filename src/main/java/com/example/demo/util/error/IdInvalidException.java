@@ -1,4 +1,4 @@
-package com.example.demo.service.error;
+package com.example.demo.util.error;
 
 public class IdInvalidException extends Exception {
     public IdInvalidException(String message) {
