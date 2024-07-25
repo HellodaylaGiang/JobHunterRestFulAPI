@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.dto.LoginDTO;
+import com.example.demo.domain.dto.ResLoginDTO;
 import com.example.demo.util.SecurityUtil;
 
 import jakarta.validation.Valid;
@@ -26,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
         // Nạp input gồm username/password vào Security
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginDTO.getUsername(), loginDTO.getPassword());
@@ -35,7 +36,11 @@ public class AuthController {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         // create a token
-        this.securityUtil.createToken(authentication);
-        return ResponseEntity.ok().body(loginDTO);
+        // phải trả về một đối tượng (do function beforeBodyWrite() bên formatResPonse)
+        // nên tạo class ResLoginDTO
+        String access_token = this.securityUtil.createToken(authentication);
+        ResLoginDTO res = new ResLoginDTO();
+        res.setAccessToken(access_token);
+        return ResponseEntity.ok().body(res);
     }
 }
