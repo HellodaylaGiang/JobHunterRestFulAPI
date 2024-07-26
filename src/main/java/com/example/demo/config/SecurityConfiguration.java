@@ -42,6 +42,8 @@ public class SecurityConfiguration {
 
         http
                 .csrf(c -> c.disable())
+                // cấu hình mặc đinh Cors, xử lý bên CorsConfig
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                         authz -> authz
                                 .requestMatchers("/", "/login").permitAll()
