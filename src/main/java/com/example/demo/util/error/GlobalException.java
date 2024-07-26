@@ -19,7 +19,6 @@ import com.example.demo.domain.RestResponse;
 public class GlobalException {
 
     @ExceptionHandler(value = {
-            IdInvalidException.class,
             UsernameNotFoundException.class,
             BadCredentialsException.class
     })

@@ -30,18 +30,21 @@ public class SecurityUtil {
     private long jwtExpiration;
 
     public String createToken(Authentication authentication) {
+        // thời gian tạo ra token
         Instant now = Instant.now();
         Instant validity = now.plus(this.jwtExpiration, ChronoUnit.SECONDS);
 
-        // @formatter:off
-            JwtClaimsSet claims = JwtClaimsSet.builder()
-            .issuedAt(now)
-            .expiresAt(validity)
-            .subject(authentication.getName())
-            .claim("hoidanit", authentication)
-            .build();
-            JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
-            return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, 
-           claims)).getTokenValue();
+        // tạo phần body token
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuedAt(now)
+                .expiresAt(validity)
+                .subject(authentication.getName())
+                .claim("hoidanit", authentication)
+                .build();
+
+        // tạo phần header token
+        JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader,
+                claims)).getTokenValue();
     }
 }
