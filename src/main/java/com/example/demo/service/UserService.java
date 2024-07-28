@@ -43,9 +43,11 @@ public class UserService {
         ResultPaginationDTO rs = new ResultPaginationDTO();
         Meta mt = new Meta();
 
-        mt.setCurrentPage(p.getNumber() + 1);
-        mt.setPageSize(p.getSize());
+        // Lấy từ Fe
+        mt.setCurrentPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
 
+        // lấy từ database
         mt.setTotalPages(p.getTotalPages());
         mt.setTotalElements(p.getTotalElements());
 

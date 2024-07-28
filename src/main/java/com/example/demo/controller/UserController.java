@@ -11,15 +11,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.User;
 import com.example.demo.domain.dto.ResultPaginationDTO;
 import com.example.demo.service.UserService;
+import com.example.demo.util.annotation.ApiMessage;
 import com.example.demo.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
 
 @RestController
+@RequestMapping("/api/v1")
+
 public class UserController {
 
     private final UserService userService;
@@ -32,6 +36,7 @@ public class UserController {
     }
 
     @PostMapping("/users/create")
+    @ApiMessage("create a user")
     public ResponseEntity<User> createNewUser(@RequestBody User u) {
         String hashPass = passwordEncoder.encode(u.getPassword());
         u.setPassword(hashPass);
@@ -39,6 +44,7 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
+    @ApiMessage("delete user by id")
     public ResponseEntity<String> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
 
         if (id > 1500) {
@@ -49,6 +55,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
+    @ApiMessage("get user by id")
     public ResponseEntity<User> getUserById(@PathVariable("id") long id) throws IdInvalidException {
 
         if (id > 1500) {
@@ -60,7 +67,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(u);
     }
 
+    // Pageable sẽ tự động lấy pageNumber, pageSize, sort từ Postman
+    // chỉ cần đặt đúng param là page, size, sort
+    // param filter của Specification
     @GetMapping("/users")
+    @ApiMessage("fetch all users")
     public ResponseEntity<ResultPaginationDTO> getAllUser(
             @Filter Specification<User> spec,
             Pageable pageable
@@ -78,6 +89,7 @@ public class UserController {
     }
 
     @PutMapping("/users")
+    @ApiMessage("update a user")
     public ResponseEntity<User> updateUser(@RequestBody User u) {
         return ResponseEntity.status(HttpStatus.OK).body(this.userService.updateUser(u));
     }

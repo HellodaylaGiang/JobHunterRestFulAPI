@@ -10,16 +10,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.Company;
 import com.example.demo.domain.dto.ResultPaginationDTO;
 import com.example.demo.service.CompanyService;
+import com.example.demo.util.annotation.ApiMessage;
 import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
 
 @RestController
+@RequestMapping("/api/v1")
 public class CompanyController {
     private CompanyService companyService;
 
@@ -28,23 +31,30 @@ public class CompanyController {
     }
 
     @PostMapping("/companies")
+    @ApiMessage("create a company")
     public ResponseEntity<Company> create(@Valid @RequestBody Company company) {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(this.companyService.handleSaveCompany(company));
     }
 
     @DeleteMapping("/companies/{id}")
+    @ApiMessage("delete a company")
     public ResponseEntity<Void> delete(@PathVariable("id") long id) {
         this.companyService.handleDeleteCompany(id);
         return ResponseEntity.ok().body(null);
     }
 
     @GetMapping("/companies/{id}")
+    @ApiMessage("get a company by id")
     public ResponseEntity<Company> getCompanyById(@PathVariable("id") long id) {
         return ResponseEntity.ok().body(this.companyService.getCompanyById(id));
     }
 
+    // Pageable sẽ tự động lấy pageNumber, pageSize, sort từ Postman
+    // chỉ cần đặt đúng param là page, size, sort
+    // param filter của Specification
     @GetMapping("/companies")
+    @ApiMessage("get all company")
     public ResponseEntity<ResultPaginationDTO> getAllCompany(
             @Filter Specification<Company> spec,
             Pageable pageable
@@ -62,6 +72,7 @@ public class CompanyController {
     }
 
     @PutMapping("/companies")
+    @ApiMessage("update a company")
     public ResponseEntity<Company> updateCompany(@Valid @RequestBody Company company) {
         return ResponseEntity.ok().body(this.companyService.updateCompany(company));
     }
