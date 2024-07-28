@@ -1,9 +1,7 @@
 package com.example.demo.controller;
 
-import java.util.Optional;
-
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,12 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.Company;
 import com.example.demo.domain.dto.ResultPaginationDTO;
 import com.example.demo.service.CompanyService;
+import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
 
@@ -48,16 +46,19 @@ public class CompanyController {
 
     @GetMapping("/companies")
     public ResponseEntity<ResultPaginationDTO> getAllCompany(
-            @RequestParam("currentPage") Optional<String> currentPage,
-            @RequestParam("pageSize") Optional<String> pageSize) {
-        String sCurrentPage = currentPage.isPresent() ? currentPage.get() : "";
-        String sPageSize = pageSize.isPresent() ? pageSize.get() : "";
+            @Filter Specification<Company> spec,
+            Pageable pageable
+    // @RequestParam("currentPage") Optional<String> currentPage,
+    // @RequestParam("pageSize") Optional<String> pageSize
+    ) {
+        // String sCurrentPage = currentPage.isPresent() ? currentPage.get() : "";
+        // String sPageSize = pageSize.isPresent() ? pageSize.get() : "";
 
-        int current = Integer.parseInt(sCurrentPage);
-        int size = Integer.parseInt(sPageSize);
-        // Pageable không có hàm tạo => PageRequest kế thừa Pageable
-        Pageable pageable = PageRequest.of(current - 1, size);
-        return ResponseEntity.ok().body(this.companyService.getAllCompany(pageable));
+        // int current = Integer.parseInt(sCurrentPage);
+        // int size = Integer.parseInt(sPageSize);
+        // // Pageable không có hàm tạo => PageRequest kế thừa Pageable
+        // Pageable pageable = PageRequest.of(current - 1, size);
+        return ResponseEntity.ok().body(this.companyService.getAllCompany(spec, pageable));
     }
 
     @PutMapping("/companies")
