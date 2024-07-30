@@ -46,7 +46,7 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                         authz -> authz
-                                .requestMatchers("/", "/login").permitAll()
+                                .requestMatchers("/", "/api/v1/login").permitAll()
                                 .anyRequest().authenticated())
                 // Tại phía Server của Spring (sau khi đã cấu hình oauth2-resource-server),
                 // sẽ kích hoạt filter BearerTokenAuthenticationFilter

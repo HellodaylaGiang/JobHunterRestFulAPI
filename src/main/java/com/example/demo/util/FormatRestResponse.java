@@ -46,6 +46,9 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
         } else {
             // case success
             res.setData(body);
+            // Lấy giá trị của annotation
+            // phụ thuộc vào nơi bạn lấy giá trị của annotation, sẽ có các cách lấy giá trị
+            // khác nhau
             ApiMessage message = returnType.getMethodAnnotation(ApiMessage.class);
             res.setMessage(message != null ? message.value() : "CALL API SUCCESS");
         }

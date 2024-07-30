@@ -15,11 +15,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.User;
+import com.example.demo.domain.dto.ResCreateUserDTO;
+import com.example.demo.domain.dto.ResUpdateUserDTO;
+import com.example.demo.domain.dto.ResUserDTO;
 import com.example.demo.domain.dto.ResultPaginationDTO;
 import com.example.demo.service.UserService;
 import com.example.demo.util.annotation.ApiMessage;
 import com.example.demo.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -37,34 +42,41 @@ public class UserController {
 
     @PostMapping("/users/create")
     @ApiMessage("create a user")
-    public ResponseEntity<User> createNewUser(@RequestBody User u) {
+    public ResponseEntity<ResCreateUserDTO> createNewUser(@Valid @RequestBody User u) throws IdInvalidException {
+
+        boolean isEmailExist = this.userService.isEmailExist(u.getEmail());
+        if (isEmailExist) {
+            throw new IdInvalidException("Email " + u.getEmail() + " đã tồn tại");
+        }
+
         String hashPass = passwordEncoder.encode(u.getPassword());
         u.setPassword(hashPass);
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.handleCreateUser(u));
+        User user = this.userService.handleCreateUser(u);
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.convertToResCreateUserDTO(user));
     }
 
     @DeleteMapping("/users/{id}")
-    @ApiMessage("delete user by id")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
+    @ApiMessage("delete a user by id")
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) throws IdInvalidException {
 
-        if (id > 1500) {
-            throw new IdInvalidException("khong ton tai id: " + id);
+        User currentU = this.userService.findUserById(id);
+        if (currentU == null) {
+            throw new IdInvalidException("Không tồn tại User với id: " + id);
         }
         this.userService.deleteUser(id);
-        return ResponseEntity.status(HttpStatus.OK).body("delete a user");
+        return ResponseEntity.ok(null);
     }
 
     @GetMapping("/users/{id}")
     @ApiMessage("get user by id")
-    public ResponseEntity<User> getUserById(@PathVariable("id") long id) throws IdInvalidException {
+    public ResponseEntity<ResUserDTO> getUserById(@PathVariable("id") long id) throws IdInvalidException {
+        User currentU = this.userService.findUserById(id);
 
-        if (id > 1500) {
-            throw new IdInvalidException("khong ton tai id: " + id);
+        if (currentU == null) {
+            throw new IdInvalidException("Không tồn tại User với id: " + id);
         }
 
-        User u = this.userService.findUserById(id);
-
-        return ResponseEntity.status(HttpStatus.OK).body(u);
+        return ResponseEntity.status(HttpStatus.OK).body(this.userService.convertToResUserDTO(currentU));
     }
 
     // Pageable sẽ tự động lấy pageNumber, pageSize, sort từ Postman
@@ -90,8 +102,15 @@ public class UserController {
 
     @PutMapping("/users")
     @ApiMessage("update a user")
-    public ResponseEntity<User> updateUser(@RequestBody User u) {
-        return ResponseEntity.status(HttpStatus.OK).body(this.userService.updateUser(u));
+    public ResponseEntity<ResUpdateUserDTO> updateUser(@RequestBody User u) throws IdInvalidException {
+
+        User currentU = this.userService.updateUser(u);
+
+        if (currentU == null) {
+            throw new IdInvalidException("Không tồn tại User với id: " + u.getId());
+        }
+
+        return ResponseEntity.ok(this.userService.convertToResUpdateUserDTO(currentU));
     }
 
 }
