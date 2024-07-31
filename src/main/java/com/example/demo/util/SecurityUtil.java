@@ -39,6 +39,19 @@ public class SecurityUtil {
     @Value("${hoidanit.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
 
+    // Người dùng sau khi login thành công, sẽ được server trả về:
+    // access_token : token để định danh người dùng (thời gian sống ngắn : 5 phút,
+    // 10 phút…)
+    // refresh_token : sử dụng refresh token để renew thời gian sống lâu hơn nhiều,
+    // thường là 1 ngày, 30 ngày … )
+    // => access token được lưu tại Local Storage (frontend dễ dàng truy cập và sử
+    // dụng) .
+    // Đặt thời gian sống ngắn để giảm thiểu rủi ro
+    // Refresh token được lưu tại cookies với mục đích là Server sử dụng (vì cookie
+    // luôn được
+    // gửi kèm với mỗi lời gọi request) => lưu ở cookies sẽ an toàn hơn
+    // (do thời gian sống của token lâu hơn access token
+
     public String createAccessToken(Authentication authentication) {
         // thời gian tạo ra token
         Instant now = Instant.now();
