@@ -3,7 +3,6 @@ package com.example.demo.domain;
 import java.time.Instant;
 
 import com.example.demo.util.SecurityUtil;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,7 +36,7 @@ public class Company {
     private String logo;
 
     // format dữ liệu trả về Fe, còn Be lưu vẫn bth không có múi giờ
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GMT+7")
+    // @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GMT+7")
     private Instant createdAt;
 
     private Instant updatedAt;
