@@ -2,6 +2,8 @@ package com.example.demo.util;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -52,17 +54,24 @@ public class SecurityUtil {
     // gửi kèm với mỗi lời gọi request) => lưu ở cookies sẽ an toàn hơn
     // (do thời gian sống của token lâu hơn access token
 
-    public String createAccessToken(Authentication authentication) {
+    public String createAccessToken(Authentication authentication, ResLoginDTO.UserLogin userLogin) {
         // thời gian tạo ra token
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
+
+        // hardcode permission (for testing)
+        List<String> listAuthority = new ArrayList<String>();
+
+        listAuthority.add("ROLE_USER_CREATE");
+        listAuthority.add("ROLE_USER_UPDATE");
 
         // tạo phần body token
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(authentication.getName())
-                .claim("hoidanit", authentication)
+                .claim("user", userLogin)
+                .claim("permission", listAuthority)
                 .build();
 
         // tạo phần header token

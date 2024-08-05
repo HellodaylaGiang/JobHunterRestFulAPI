@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import com.example.demo.domain.dto.LoginDTO;
 import com.example.demo.domain.dto.ResLoginDTO;
 import com.example.demo.service.UserService;
 import com.example.demo.util.SecurityUtil;
+import com.example.demo.util.annotation.ApiMessage;
 
 import jakarta.validation.Valid;
 
@@ -40,7 +42,7 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
         // Nạp input gồm username/password vào Security
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -52,10 +54,10 @@ public class AuthController {
         // create a token
         // phải trả về một đối tượng (do function beforeBodyWrite() bên formatResPonse)
         // nên tạo class ResLoginDTO
-        String access_token = this.securityUtil.createAccessToken(authentication);
+        // set thông tin người dùng đăng nhập vào context(có thể dùng sau này)
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        ResLoginDTO res = new ResLoginDTO();
 
+        ResLoginDTO res = new ResLoginDTO();
         // Set UserLogin cho ResLoginDTO
         User currentUserDB = this.userService.handleGetUserByUsername(loginDTO.getUsername());
         if (currentUserDB != null) {
@@ -66,6 +68,8 @@ public class AuthController {
             res.setUserLogin(userLogin);
         }
 
+        // create access token
+        String access_token = this.securityUtil.createAccessToken(authentication, res.getUserLogin());
         res.setAccessToken(access_token);
 
         // create refresh token
@@ -87,4 +91,27 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
                 .body(res);
     }
+
+    @GetMapping("/auth/account")
+    @ApiMessage("/fetch account")
+    public ResponseEntity<ResLoginDTO.UserLogin> getAccount() {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
+
+        User currentUserDB = this.userService.handleGetUserByUsername(email);
+
+        ResLoginDTO.UserLogin userLogin = new ResLoginDTO.UserLogin();
+        if (currentUserDB != null) {
+            userLogin.setId(currentUserDB.getId());
+            userLogin.setEmail(currentUserDB.getEmail());
+            userLogin.setName(currentUserDB.getName());
+        }
+        return ResponseEntity.ok().body(userLogin);
+    }
+
+    @GetMapping("/auth/refresh")
+    @ApiMessage("Get User by refresh token")
+    public ResponseEntity<Void> getRefresh() {
+        return ResponseEntity.ok().body(null);
+    }
+
 }
