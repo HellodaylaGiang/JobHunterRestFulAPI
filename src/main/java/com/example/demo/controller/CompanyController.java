@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.Company;
-import com.example.demo.domain.dto.ResultPaginationDTO;
+import com.example.demo.domain.response.ResultPaginationDTO;
 import com.example.demo.service.CompanyService;
 import com.example.demo.util.annotation.ApiMessage;
 import com.turkraft.springfilter.boot.Filter;

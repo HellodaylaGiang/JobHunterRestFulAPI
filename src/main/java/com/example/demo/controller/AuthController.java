@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.User;
-import com.example.demo.domain.dto.LoginDTO;
-import com.example.demo.domain.dto.ResLoginDTO;
+import com.example.demo.domain.request.ReqLoginDTO;
+import com.example.demo.domain.response.ResLoginDTO;
 import com.example.demo.service.UserService;
 import com.example.demo.util.SecurityUtil;
 import com.example.demo.util.annotation.ApiMessage;
@@ -46,7 +46,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody ReqLoginDTO loginDTO) {
         // Nạp input gồm username/password vào Security
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginDTO.getUsername(), loginDTO.getPassword());

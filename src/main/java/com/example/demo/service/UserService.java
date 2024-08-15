@@ -10,11 +10,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.domain.User;
-import com.example.demo.domain.dto.Meta;
-import com.example.demo.domain.dto.ResCreateUserDTO;
-import com.example.demo.domain.dto.ResUpdateUserDTO;
-import com.example.demo.domain.dto.ResUserDTO;
-import com.example.demo.domain.dto.ResultPaginationDTO;
+import com.example.demo.domain.response.ResCreateUserDTO;
+import com.example.demo.domain.response.ResUpdateUserDTO;
+import com.example.demo.domain.response.ResUserDTO;
+import com.example.demo.domain.response.ResultPaginationDTO;
 import com.example.demo.repository.UserRepository;
 
 @Service
@@ -50,7 +49,7 @@ public class UserService {
         Page<User> p = this.userRepository.findAll(spec, pageable);
 
         ResultPaginationDTO rs = new ResultPaginationDTO();
-        Meta mt = new Meta();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
 
         // Lấy từ Fe
         mt.setCurrentPage(pageable.getPageNumber() + 1);

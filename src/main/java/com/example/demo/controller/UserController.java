@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.User;
-import com.example.demo.domain.dto.ResCreateUserDTO;
-import com.example.demo.domain.dto.ResUpdateUserDTO;
-import com.example.demo.domain.dto.ResUserDTO;
-import com.example.demo.domain.dto.ResultPaginationDTO;
+import com.example.demo.domain.response.ResCreateUserDTO;
+import com.example.demo.domain.response.ResUpdateUserDTO;
+import com.example.demo.domain.response.ResUserDTO;
+import com.example.demo.domain.response.ResultPaginationDTO;
 import com.example.demo.service.UserService;
 import com.example.demo.util.annotation.ApiMessage;
 import com.example.demo.util.error.IdInvalidException;
