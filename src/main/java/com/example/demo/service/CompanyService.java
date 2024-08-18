@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -8,15 +9,20 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.domain.Company;
+import com.example.demo.domain.User;
 import com.example.demo.domain.response.ResultPaginationDTO;
 import com.example.demo.repository.CompanyRepository;
+import com.example.demo.repository.UserRepository;
 
 @Service
 public class CompanyService {
     private final CompanyRepository companyRepository;
+    private final UserRepository userRepository;
 
-    public CompanyService(CompanyRepository companyRepository) {
+    public CompanyService(CompanyRepository companyRepository,
+            UserRepository userRepository) {
         this.companyRepository = companyRepository;
+        this.userRepository = userRepository;
     }
 
     public Company handleSaveCompany(Company company) {
@@ -24,6 +30,13 @@ public class CompanyService {
     }
 
     public void handleDeleteCompany(long id) {
+        // xóa user => company
+        Optional<Company> c = this.companyRepository.findById(id);
+        if (c.isPresent()) {
+            List<User> users = this.userRepository.findByCompany(c.get());
+            this.userRepository.deleteAll(users);
+        }
+
         this.companyRepository.deleteById(id);
     }
 

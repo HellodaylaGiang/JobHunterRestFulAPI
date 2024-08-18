@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import com.example.demo.util.SecurityUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,6 +50,7 @@ public class Company {
     private String updatedBy;
 
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    @JsonIgnore
     List<User> users;
 
     // Lưu thông tin người dùng đăng nhập, thời gian khi thao tác create, update
