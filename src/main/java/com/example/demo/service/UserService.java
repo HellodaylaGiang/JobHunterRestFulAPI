@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.domain.Company;
+import com.example.demo.domain.Role;
 import com.example.demo.domain.User;
 import com.example.demo.domain.response.ResCreateUserDTO;
 import com.example.demo.domain.response.ResUpdateUserDTO;
@@ -21,12 +22,15 @@ import com.example.demo.repository.UserRepository;
 public class UserService {
 
     private final UserRepository userRepository;
-    private CompanyService companyService;
+    private final CompanyService companyService;
+    private final RoleService roleService;
 
     public UserService(UserRepository userRepository,
-            CompanyService companyService) {
+            CompanyService companyService,
+            RoleService roleService) {
         this.userRepository = userRepository;
         this.companyService = companyService;
+        this.roleService = roleService;
     }
 
     public User handleCreateUser(User u) {
@@ -35,7 +39,15 @@ public class UserService {
             Company c = this.companyService.getCompanyById(u.getCompany().getId());
             u.setCompany(c);
         }
+
+        // check role
+        if (u.getRole() != null) {
+            Role r = this.roleService.fetchById(u.getRole().getId());
+            u.setRole(r != null ? r : null);
+        }
+
         return this.userRepository.save(u);
+
     }
 
     public User findUserById(long id) {
@@ -72,18 +84,7 @@ public class UserService {
 
         // remove sensitive data
         List<ResUserDTO> listU = p.getContent()
-                .stream().map(item -> new ResUserDTO(
-                        item.getId(),
-                        item.getEmail(),
-                        item.getName(),
-                        item.getGender(),
-                        item.getAddress(),
-                        item.getAge(),
-                        item.getUpdatedAt(),
-                        item.getCreatedAt(),
-                        new ResUserDTO.CompanyUser(
-                                item.getCompany() != null ? item.getCompany().getId() : 0,
-                                item.getCompany() != null ? item.getCompany().getName() : null)))
+                .stream().map(item -> this.convertToResUserDTO(item))
                 .collect(Collectors.toList());
 
         rs.setResult(listU);
@@ -102,8 +103,15 @@ public class UserService {
             // check company
             if (u.getCompany() != null) {
                 Company c = this.companyService.getCompanyById(u.getId());
-                u.setCompany(c != null ? c : null);
+                newU.setCompany(c != null ? c : null);
             }
+
+            // check role
+            if (u.getRole() != null) {
+                Role r = this.roleService.fetchById(u.getRole().getId());
+                u.setRole(r != null ? r : null);
+            }
+
             return this.handleCreateUser(newU);
         }
         return newU;
@@ -136,11 +144,18 @@ public class UserService {
     public ResUserDTO convertToResUserDTO(User u) {
         ResUserDTO res = new ResUserDTO();
         ResUserDTO.CompanyUser com = new ResUserDTO.CompanyUser();
+        ResUserDTO.RoleUser r = new ResUserDTO.RoleUser();
 
         if (u.getCompany() != null) {
             com.setId(u.getCompany().getId());
             com.setName(u.getCompany().getName());
             res.setCompanyUser(com);
+        }
+
+        if (u.getRole() != null) {
+            r.setId(u.getRole().getId());
+            r.setName(u.getRole().getName());
+            res.setRoleUser(r);
         }
 
         res.setId(u.getId());

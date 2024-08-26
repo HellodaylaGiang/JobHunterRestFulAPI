@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.domain.Role;
 import com.example.demo.domain.User;
 import com.example.demo.domain.response.ResCreateUserDTO;
 import com.example.demo.domain.response.ResUpdateUserDTO;
 import com.example.demo.domain.response.ResUserDTO;
 import com.example.demo.domain.response.ResultPaginationDTO;
+import com.example.demo.service.RoleService;
 import com.example.demo.service.UserService;
 import com.example.demo.util.annotation.ApiMessage;
 import com.example.demo.util.error.IdInvalidException;
@@ -32,12 +34,15 @@ import jakarta.validation.Valid;
 public class UserController {
 
     private final UserService userService;
+    private final RoleService roleService;
     private PasswordEncoder passwordEncoder;
 
     public UserController(UserService userService,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            RoleService roleService) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.roleService = roleService;
     }
 
     @PostMapping("/users/create")
@@ -47,6 +52,11 @@ public class UserController {
         boolean isEmailExist = this.userService.isEmailExist(u.getEmail());
         if (isEmailExist) {
             throw new IdInvalidException("Email " + u.getEmail() + " đã tồn tại");
+        }
+
+        Role r = this.roleService.fetchById(u.getRole().getId());
+        if (r == null) {
+            throw new IdInvalidException("Không tồn tại role với id = " + u.getRole().getId());
         }
 
         String hashPass = passwordEncoder.encode(u.getPassword());

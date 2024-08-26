@@ -59,7 +59,13 @@ public class SecurityUtil {
     // gửi kèm với mỗi lời gọi request) => lưu ở cookies sẽ an toàn hơn
     // (do thời gian sống của token lâu hơn access token
 
-    public String createAccessToken(String email, ResLoginDTO.UserLogin userLogin) {
+    public String createAccessToken(String email, ResLoginDTO dto) {
+
+        ResLoginDTO.UserInsideToken userInsideToken = new ResLoginDTO.UserInsideToken();
+        userInsideToken.setId(dto.getUserLogin().getId());
+        userInsideToken.setEmail(dto.getUserLogin().getEmail());
+        userInsideToken.setName(dto.getUserLogin().getName());
+
         // thời gian tạo ra token
         Instant now = Instant.now();
         Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
@@ -75,7 +81,7 @@ public class SecurityUtil {
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(email)
-                .claim("user", userLogin)
+                .claim("user", userInsideToken)
                 .claim("permission", listAuthority)
                 .build();
 
@@ -85,17 +91,22 @@ public class SecurityUtil {
                 claims)).getTokenValue();
     }
 
-    public String createRefreshToken(String email, ResLoginDTO resLoginDTO) {
+    public String createRefreshToken(String email, ResLoginDTO dto) {
         // thời gian tạo ra token
         Instant now = Instant.now();
         Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
+
+        ResLoginDTO.UserInsideToken userInsideToken = new ResLoginDTO.UserInsideToken();
+        userInsideToken.setId(dto.getUserLogin().getId());
+        userInsideToken.setEmail(dto.getUserLogin().getEmail());
+        userInsideToken.setName(dto.getUserLogin().getName());
 
         // tạo phần body token
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(email)
-                .claim("user", resLoginDTO.getUser())
+                .claim("user", userInsideToken)
                 .build();
 
         // tạo phần header token
