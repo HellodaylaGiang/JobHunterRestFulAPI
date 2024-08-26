@@ -2,12 +2,14 @@ package com.example.demo.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.User;
 import com.example.demo.domain.request.ReqLoginDTO;
+import com.example.demo.domain.response.ResCreateUserDTO;
 import com.example.demo.domain.response.ResLoginDTO;
 import com.example.demo.service.UserService;
 import com.example.demo.util.SecurityUtil;
@@ -33,16 +36,19 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityUtil securityUtil;
     private final UserService userService;
+    private PasswordEncoder passwordEncoder;
 
     @Value("${hoidanit.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
 
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder,
             SecurityUtil securityUtil,
-            UserService userService) {
+            UserService userService,
+            PasswordEncoder passwordEncoder) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/auth/login")
@@ -196,5 +202,20 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, deleteSpringCookie.toString())
                 .body(null);
+    }
+
+    @PostMapping("/auth/register")
+    @ApiMessage("Register a user")
+    public ResponseEntity<ResCreateUserDTO> register(@Valid @RequestBody User u) throws IdInvalidException {
+
+        boolean isEmailExist = this.userService.isEmailExist(u.getEmail());
+        if (isEmailExist) {
+            throw new IdInvalidException("Email " + u.getEmail() + " đã tồn tại");
+        }
+
+        String hashPass = this.passwordEncoder.encode(u.getPassword());
+        u.setPassword(hashPass);
+        User user = this.userService.handleCreateUser(u);
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.convertToResCreateUserDTO(user));
     }
 }
