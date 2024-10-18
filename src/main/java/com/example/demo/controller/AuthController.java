@@ -38,7 +38,7 @@ public class AuthController {
     private final UserService userService;
     private PasswordEncoder passwordEncoder;
 
-    @Value("${job.jwt.refresh-token-validity-in-seconds}")
+    @Value("${hoidanit.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
 
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder,

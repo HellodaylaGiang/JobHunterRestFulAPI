@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: JobHunter
+
+  # config database
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  datasource:
+    url: jdbc:mysql://localhost:3306/jobhunter1
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # config upload file
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+
+# config JWT
+hoidanit:
+  jwt:
+    base64-secret: qoAEABDke07+AVLepXB4aCMtsT0wMAqR5x2VFyldsnx6e75YQkJH2UcZKTjEyoNgG71SBCXfq5N6NVZxWOfsHQ==
+    access-token-validity-in-seconds: 8640000
+    refresh-token-validity-in-seconds: 8640000
+
+  # base path for file uploads
+  upload-file:
+    base-uri: file:///D:/upload2/

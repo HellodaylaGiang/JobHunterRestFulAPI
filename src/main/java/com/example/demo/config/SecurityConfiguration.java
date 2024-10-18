@@ -29,7 +29,7 @@ import com.nimbusds.jose.util.Base64;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
 
-    @Value("${job.jwt.base64-secret}")
+    @Value("${hoidanit.jwt.base64-secret}")
     private String jwtKey;
 
     @Bean
