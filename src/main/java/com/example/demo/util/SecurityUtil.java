@@ -37,13 +37,13 @@ public class SecurityUtil {
     public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
 
     // lấy tham số môi trường trong properties
-    @Value("${hoidanit.jwt.base64-secret}")
+    @Value("${job.jwt.base64-secret}")
     private String jwtKey;
 
-    @Value("${hoidanit.jwt.access-token-validity-in-seconds}")
+    @Value("${job.jwt.access-token-validity-in-seconds}")
     private long accessTokenExpiration;
 
-    @Value("${hoidanit.jwt.refresh-token-validity-in-seconds}")
+    @Value("${job.jwt.refresh-token-validity-in-seconds}")
     private long refreshTokenExpiration;
 
     // Người dùng sau khi login thành công, sẽ được server trả về:

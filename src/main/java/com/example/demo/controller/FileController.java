@@ -23,7 +23,7 @@ import com.example.demo.util.error.UploadException;
 @RequestMapping("/api/v1")
 public class FileController {
 
-    @Value("${hoidanit.upload-file.base-uri}")
+    @Value("${job.upload-file.base-uri}")
     private String baseUri;
 
     private final FileService fileService;

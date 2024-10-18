@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FileService {
 
-    @Value("${hoidanit.upload-file.base-uri}")
+    @Value("${job.upload-file.base-uri}")
     private String baseUri;
 
     public void createDirectory(String folder) throws URISyntaxException {
